@@ -33,10 +33,13 @@ def convert_1d_qubo_to_2d(qubo, n):
     
     
     
-    obj_qubo, obj_constant = convert_1d_qubo_to_2d(objective, qubo_size)
+obj_qubo, obj_constant = convert_1d_qubo_to_2d(objective, qubo_size)
+
+con_qubo,con_constant = convert_1d_qubo_to_2d(constraint, qubo_size)
+
     
-    con_qubo,con_constant = convert_1d_qubo_to_2d(constraint, qubo_size)
-    
-    
-    
-    
+
+print('constant term and QUBO matrix representing the cost (unconstrained objective) function' )
+print(obj_constant, obj_qubo)
+print('constant term and QUBO matrix representing the constraint function' )
+print(con_constant, con_qubo)
