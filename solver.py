@@ -60,15 +60,45 @@ Q = -1*obj_qubo + penalty * con_qubo
 #constant term
 c = -1*obj_constant+ penalty * con_constant
 
+#example of solving the problem with QBsolve
 
-#evaluate a random solution
-x = np.array([np.random.randint(2) for i in range(len(Q))])
-print(x)
+#change QUBO matrix to the QBSolve format
+newQ = {}
+for i in range(len(Q)):
+    newQ[tuple([i,i])] = Q[i][i]
 
-#example of how to estimate the energy (objective function) and the constraint function seperately, useful if you want to test that your solution is feasible
-#x^TQx + c
-obj = x.transpose().dot(obj_qubo).dot(x) + obj_constant
-con = x.transpose().dot(con_qubo).dot(x) + con_constant
+for i in range(len(Q)):
+    for j in range(i+1, len(Q)):
+        newQ[tuple([i,j])] = Q[i][j]
+print(newQ)
 
-print('The objective function of x is ',obj )
-print('The constraint function of x is ',con )
+
+#run solver, need to pip install dwave_qbsolv
+
+sampler = neal.SimulatedAnnealingSampler()
+#to use the tabu sampler, need to pip install dwave_tabu
+#sampler = TabuSampler()
+response = QBSolv().sample_qubo(newQ, solver=sampler, find_max = False)
+
+#response = TabuSampler().sample_qubo(newQ)
+
+print("samples=" + str(list(response.samples())))
+print("energies=" + str(list(response.data_vectors['energy'])) )
+'''
+
+sampleset = sampler.sample(newQ, num_reads=10)
+decoded_samples = model.decode_sampleset(sampleset)
+best_sample = min(decoded_samples, key=lambda x: x.energy)
+print(best_sample.sample)
+
+'''
+solution = list(response.samples())[-1]
+
+y = np.array([int(solution[i]) for i in range(len(solution))])
+print(y)
+
+obj = y.transpose().dot(obj_qubo).dot(y) + obj_constant
+con = y.transpose().dot(con_qubo).dot(y) + con_constant
+
+print('The objective function value of x is ',obj )
+print('The constraint function value of x is ',con )
