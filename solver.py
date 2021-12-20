@@ -43,13 +43,6 @@ obj_qubo, obj_constant = convert_1d_qubo_to_2d(objective, qubo_size)
 
 con_qubo,con_constant = convert_1d_qubo_to_2d(constraint, qubo_size)
 
-    
-
-print('constant term and QUBO matrix representing the cost (unconstrained objective) function' )
-print(obj_constant, obj_qubo)
-print('constant term and QUBO matrix representing the constraint function' )
-print(con_constant, con_qubo)
-
 
 
 ######## QUBO you need to solve ########
@@ -63,14 +56,8 @@ c = -1*obj_constant+ penalty * con_constant
 #example of solving the problem with QBsolve
 
 #change QUBO matrix to the QBSolve format
-newQ = {}
-for i in range(len(Q)):
-    newQ[tuple([i,i])] = Q[i][i]
+newQ = util.convert_QUBO_to_dwave_format(Q)
 
-for i in range(len(Q)):
-    for j in range(i+1, len(Q)):
-        newQ[tuple([i,j])] = Q[i][j]
-print(newQ)
 
 
 #run solver, need to pip install dwave_qbsolv
@@ -84,14 +71,7 @@ response = QBSolv().sample_qubo(newQ, solver=sampler, find_max = False)
 
 print("samples=" + str(list(response.samples())))
 print("energies=" + str(list(response.data_vectors['energy'])) )
-'''
 
-sampleset = sampler.sample(newQ, num_reads=10)
-decoded_samples = model.decode_sampleset(sampleset)
-best_sample = min(decoded_samples, key=lambda x: x.energy)
-print(best_sample.sample)
-
-'''
 solution = list(response.samples())[-1]
 
 y = np.array([int(solution[i]) for i in range(len(solution))])
