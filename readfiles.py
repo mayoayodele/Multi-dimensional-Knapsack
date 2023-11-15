@@ -1,11 +1,9 @@
 import numpy as np
 from util import *
-from dwave_qbsolv import QBSolv
-import neal
-from tabu import TabuSampler
+
 
 #file_path = 'Weing//WEING8.npz'
-file_path = 'weish//weish01.npz'
+file_path = 'weish//Weish01.npz'
 loaded_file = np.load(file_path)
 qubo_size = loaded_file['n']
 objective = loaded_file['objective']
